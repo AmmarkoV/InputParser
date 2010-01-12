@@ -274,3 +274,14 @@ int InputParser::SeperateWords(char * inpt)
     }
     return bufs[WORDS_SEPERATED];
 }//END OF SEPERATE_WORDS
+
+int InputParser::SeperateWordsCC(const char * inpt)
+{
+  return SeperateWords((char * )inpt);
+}
+
+
+int InputParser::SeperateWordsUC(unsigned char * inpt)
+{
+  return SeperateWords((char * )inpt);
+}

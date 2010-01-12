@@ -46,8 +46,10 @@ class InputParser
     unsigned short GetMemoryLength(int num);
     void MemoryToUpcase(int num);
     int GetMemoryInt(int num);
-    int SeperateWords(char * inpt);
 
+    int SeperateWords(char * inpt);
+    int SeperateWordsCC(const char * inpt);
+    int SeperateWordsUC(unsigned char * inpt);
 };
 
 #endif
