@@ -311,15 +311,16 @@ unsigned int InputParser_GetWordLength(struct InputParserC * ipc,int num)
 
 int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcopy)
 {
-  fprintf(stderr,"TODO TODO fix last word! :P\n");
+
   if (CheckIPCOk(ipc)==0) { return 0; }
 
   unsigned int   STRING_END = strlen(inpt) ;
   int WORDS_SEPERATED = 0 , NEXT_SHOULD_NOT_BE_A_DELIMITER=1 , FOUND_DELIMETER ; // Ignores starting ,,,,,string,etc
 
-  //fprintf(stderr,"SeperateWords at word with size %u \n",STRING_END);
-  //fprintf(stderr,"%u delimeters loaded \n",ipc->cur_delimeter_count);
 
+
+  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // COPY STRING ( OR POINTER ) TO IPC STRUCTURE
   if ( keepcopy == 1 ) {  // IF WE HAVE ALREADY ALLOCATED A STRING TO ipc->str , we should free it to prevent memory leaks!
                           if (ipc->local_allocation == 1)
                           {
@@ -336,17 +337,18 @@ int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcop
                        { ipc->str = inpt; }
 
   ipc->str_length = STRING_END;
+  // COPY STRING ( OR POINTER ) TO IPC STRUCTURE
+  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
   register int i,z;
   ipc->tokens_count = 0 , ipc->tokenlist[0].token_start=0;
   for (i=0; i<STRING_END; i++)
   {
-    //fprintf(stderr,"%u(%c)",i,inpt[i]);
     FOUND_DELIMETER = 0;
     for (z=0; z<ipc->cur_delimeter_count; z++)
     {
-    //fprintf(stderr,"comp (`%c`,`%c`)",inpt[i],ipc->delimeters[z]);
+
     if ( inpt[i] == ipc->delimeters[z] )
       {
         FOUND_DELIMETER = 1;
@@ -360,25 +362,25 @@ int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcop
         } else
         {
           ipc->tokenlist[ipc->tokens_count].token_start=i+1;
-          //printf("Ignoring character %c due to SHOULD_NOT_BE_A_DELIMETER SET\n",ipc->delimeters[z]);
         }
       }
     }
 
-    if (FOUND_DELIMETER == 0 )
-      {
-        NEXT_SHOULD_NOT_BE_A_DELIMITER=0;
-        //printf(" `%c` != delimeter \n",inpt[i]);
-      } else
-    if (FOUND_DELIMETER == 1 )
-      {
-        NEXT_SHOULD_NOT_BE_A_DELIMITER=1;
-        //printf(" `%c` == delimeter \n",inpt[i]);
-      }
+    if (FOUND_DELIMETER == 0 ) NEXT_SHOULD_NOT_BE_A_DELIMITER=0;
+      else
+    if (FOUND_DELIMETER == 1 ) NEXT_SHOULD_NOT_BE_A_DELIMITER=1;
+
   }
 
+   if (NEXT_SHOULD_NOT_BE_A_DELIMITER==0)
+        {
+         ipc->tokenlist[ipc->tokens_count].length = i - ipc->tokenlist[ipc->tokens_count].token_start;
+         ipc->tokens_count+=1;
+         ipc->tokenlist[ipc->tokens_count].token_start = i+1;
+         WORDS_SEPERATED+=1;
+
+        } else
   ipc->tokenlist[ipc->tokens_count].length = i - ipc->tokenlist[ipc->tokens_count].token_start;
-  //fprintf(stderr,"Survived end\n",STRING_END);
 
   return WORDS_SEPERATED;
 }

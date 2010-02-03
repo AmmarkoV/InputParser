@@ -73,6 +73,19 @@ int main()
     ParseString(ipc,parsemessage2);
 
 
+    char * parsemessage3 = "010\0";
+    ParseString(ipc,parsemessage3);
+
+    char * parsemessage4 = "\0";
+    ParseString(ipc,parsemessage4);
+
+
+    char * parsemessage5 = ",,,,(),\0";
+    ParseString(ipc,parsemessage5);
+
+    char * parsemessage6 = "FORWARD(45)\0";
+    ParseString(ipc,parsemessage6);
+
     printf("Deleting the new instance of the parser\n");
     InputParser_Destroy(ipc);
 
