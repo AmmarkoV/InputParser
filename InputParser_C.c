@@ -242,16 +242,13 @@ inline unsigned char CheckWordNumOk(struct InputParserC * ipc,int num)
 unsigned int InputParser_GetWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
-    if ( storagesize < ipc->tokenlist[num].length+1 ) //+1 gia to \0
-    {
-      return -1;
-    }
+    if ( storagesize < ipc->tokenlist[num].length+1 ) /* +1 gia to \0 */ return 0;
+
 
     int i=0;
     for ( i = ipc->tokenlist[num].token_start; i<ipc->tokenlist[num].token_start+ipc->tokenlist[num].length; i++ )
-    {
-       wheretostore[i-ipc->tokenlist[num].token_start] = ipc->str[i];
-    }
+    wheretostore[i-ipc->tokenlist[num].token_start] = ipc->str[i];
+
     wheretostore[ipc->tokenlist[num].length] = 0;
 
     return ipc->tokenlist[num].length;
@@ -261,16 +258,27 @@ unsigned int InputParser_GetWord(struct InputParserC * ipc,int num,char * wheret
 unsigned int InputParser_GetUpcaseWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
-    if ( storagesize < ipc->tokenlist[num].length+1 ) //+1 gia to \0
-    {
-      return -1;
-    }
+    if ( storagesize < ipc->tokenlist[num].length+1 ) /* +1 gia to \0 */  return 0;
 
     int i=0;
     for ( i = ipc->tokenlist[num].token_start; i<ipc->tokenlist[num].token_start+ipc->tokenlist[num].length; i++ )
-    {
-       wheretostore[i-ipc->tokenlist[num].token_start] = toupper(ipc->str[i]);
-    }
+    wheretostore[i-ipc->tokenlist[num].token_start] = toupper(ipc->str[i]);
+
+    wheretostore[ipc->tokenlist[num].length] = 0;
+
+    return ipc->tokenlist[num].length;
+}
+
+
+unsigned int InputParser_GetLowercaseWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize)
+{
+    if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
+    if ( storagesize < ipc->tokenlist[num].length+1 ) /* +1 gia to \0 */  return 0;
+
+    int i=0;
+    for ( i = ipc->tokenlist[num].token_start; i<ipc->tokenlist[num].token_start+ipc->tokenlist[num].length; i++ )
+    wheretostore[i-ipc->tokenlist[num].token_start] = tolower(ipc->str[i]);
+
     wheretostore[ipc->tokenlist[num].length] = 0;
 
     return ipc->tokenlist[num].length;

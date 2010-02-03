@@ -81,6 +81,7 @@ unsigned char InputParser_SelfCheck(struct InputParserC * ipc);
 char InputParser_GetChar(struct InputParserC * ipc,int num,int pos);
 unsigned int InputParser_GetWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize);
 unsigned int InputParser_GetUpcaseWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize);
+unsigned int InputParser_GetLowercaseWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize);
 signed int InputParser_GetWordInt(struct InputParserC * ipc,int num);
 unsigned int InputParser_GetWordLength(struct InputParserC * ipc,int num);
 
