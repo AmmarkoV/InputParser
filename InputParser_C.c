@@ -366,8 +366,7 @@ int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcop
       }
     }
 
-    if (FOUND_DELIMETER == 0 ) NEXT_SHOULD_NOT_BE_A_DELIMITER=0;
-      else
+    if (FOUND_DELIMETER == 0 ) NEXT_SHOULD_NOT_BE_A_DELIMITER=0; else
     if (FOUND_DELIMETER == 1 ) NEXT_SHOULD_NOT_BE_A_DELIMITER=1;
 
   }

@@ -1,6 +1,11 @@
 #ifndef _INPUTPARSER_C_H_
 #define _INPUTPARSER_C_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -105,4 +110,10 @@ int SeperateWords(struct InputParserC * ipc,char * inpt);
 int SeperateWordsCC(struct InputParserC * ipc,const char * inpt);
 int SeperateWordsUC(struct InputParserC * ipc,unsigned char * inpt);
 */
+#ifdef __cplusplus
+}
 #endif
+
+
+#endif
+
