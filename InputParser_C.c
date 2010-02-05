@@ -19,7 +19,7 @@
 */
 
 
-const char * ver=" 0.2 written from scratch - 31/1/10 \0";
+const char * ver=" 0.3 written from scratch - 31/1/10 \0";
 
 char * InputParserC_Version()
 {
@@ -61,11 +61,11 @@ inline signed int Str2Int_internal(char * inpt,unsigned int start_from,unsigned 
 
 inline unsigned char CheckIPCOk(struct InputParserC * ipc)
 {
-    if ( ipc->guardbyte1.checksum != ipc->guardbyte2.checksum ) { fprintf(stderr,"Wrong GuardChecksums #1\n"); return 0; }
-    if ( ipc->guardbyte3.checksum != ipc->guardbyte4.checksum ) { fprintf(stderr,"Wrong GuardChecksums #2\n"); return 0; }
-    if ( ipc->guardbyte1.checksum != ipc->guardbyte4.checksum ) { fprintf(stderr,"Wrong GuardChecksums #3\n"); return 0; }
-    if ( (ipc->tokenlist==0) ||  (ipc->tokens_max<ipc->tokens_count) ) { fprintf(stderr,"Tokenlist error\n"); return 0; }
-    if ( (ipc->delimeters==0) || (ipc->max_delimeter_count<ipc->cur_delimeter_count) ) { fprintf(stderr,"Delimeter error\n"); return 0; }
+    if ( ipc->guardbyte1.checksum != ipc->guardbyte2.checksum ) { fprintf(stderr,"Input Parser - Wrong GuardChecksums #1\n"); return 0; }
+    if ( ipc->guardbyte3.checksum != ipc->guardbyte4.checksum ) { fprintf(stderr,"Input Parser - Wrong GuardChecksums #2\n"); return 0; }
+    if ( ipc->guardbyte1.checksum != ipc->guardbyte4.checksum ) { fprintf(stderr,"Input Parser - Wrong GuardChecksums #3\n"); return 0; }
+    if ( (ipc->tokenlist==0) ||  (ipc->tokens_max<ipc->tokens_count) ) { fprintf(stderr,"Input Parser - Tokenlist error\n"); return 0; }
+    if ( (ipc->delimeters==0) || (ipc->max_delimeter_count<ipc->cur_delimeter_count) ) { fprintf(stderr,"Input Parser - Delimeter error\n"); return 0; }
 
     return 1;
 }
@@ -96,17 +96,16 @@ void InputParser_DefaultDelimeters(struct InputParserC * ipc)
    ipc->cur_delimeter_count = ipc->max_delimeter_count;
    //fprintf(stderr,"\n");
 
-
+   return;
 }
 
 /*
   InitInputParser..
 
-  Takes a null ipc structure and allocates memory to it according to options for future use!
-  for example InitInputParser( ipc , 256 , 2048 , 5 ) will allocate an InputParser Instance capeable of tokenizing up to 256 different words
-  with max size 2048 from 5 delimeters
+  Allocates an ipc structure and with memory to it according to options for future use!
+  for example InitInputParser( 256 , 5 ) will allocate an InputParser Instance capeable of tokenizing up to 256 different words
+  from 5 delimeters
 */
-//unsigned char InputParser_Create(struct InputParserC * ipc,unsigned int max_string_count,unsigned int max_delimiter_count)
 struct InputParserC * InputParser_Create(unsigned int max_string_count,unsigned int max_delimiter_count)
 {
     struct InputParserC * ipc;
@@ -131,12 +130,10 @@ struct InputParserC * InputParser_Create(unsigned int max_string_count,unsigned 
 
     ipc->guardbyte1.checksum=66666;
     ipc->guardbyte2.checksum=66666;
-
-      InputParser_DefaultDelimeters(ipc);
-
     ipc->guardbyte3.checksum=66666;
     ipc->guardbyte4.checksum=66666;
 
+    InputParser_DefaultDelimeters(ipc);
 
     return ipc;
 }
@@ -196,30 +193,49 @@ void InputParser_Destroy(struct InputParserC * ipc)
 
 }
 
-
+// ........................................................
 // Delimeters ........................................................
+// ........................................................
+
+/*
+   CheckDelimeterNumOk..
+   Checks if delimeter with number num has allocated space in memory
+*/
 inline unsigned char CheckDelimeterNumOk(struct InputParserC * ipc,int num)
 {
-    return 1;
+    if ( ipc->max_delimeter_count <= num ) return 1;
+    return 0;
 }
 
+/*
+   SetDelimeter..
+   Sets Delimeter number num with value tmp
+*/
 void SetDelimeter(struct InputParserC * ipc,int num,char tmp)
 {
     if (CheckDelimeterNumOk(ipc,num)==0) { return;}
     ipc->delimeters[num]=tmp;
 }
 
+/*
+   GetDelimeter..
+   Returns value of  Delimeter with number num
+*/
 char GetDelimeter(struct InputParserC * ipc,int num)
 {
     if (CheckDelimeterNumOk(ipc,num)==0) { return 0;}
     return ipc->delimeters[num];
 }
 // .......................................................................
+// .......................................................................
+// .......................................................................
 
 
 
 
-
+/*
+   Selfchecks IPC instance and returns 1 if everything is ok , 0 if error..
+*/
 unsigned char InputParser_SelfCheck(struct InputParserC * ipc)
 {
     if (CheckIPCOk(ipc)==0) { fprintf(stderr,"\n\n!!!!\nThis instance of InputParser is broken\n!!!!\n\n");
@@ -227,18 +243,23 @@ unsigned char InputParser_SelfCheck(struct InputParserC * ipc)
     return 1;
 }
 
-
+/*
+   CheckWordNumOk..
+   Checks if word with number num has allocated space in memory
+*/
 inline unsigned char CheckWordNumOk(struct InputParserC * ipc,int num)
 {
   if ( CheckIPCOk(ipc)==0) { return 0; }
   if ( (ipc->tokenlist==0) || ( ipc->tokens_count < num ) ) { return 0; }
-  //if ( ipc->str_length <= ipc->tokenlist->token_start ) { return 0; }
 
 
   return 1;
 }
 
-
+/*
+   InputParser_GetWord..
+   Copies token with number (num) to c string (wheretostore) , variable storagesize contains the total size of wheretostore..!
+*/
 unsigned int InputParser_GetWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
@@ -254,7 +275,10 @@ unsigned int InputParser_GetWord(struct InputParserC * ipc,int num,char * wheret
     return ipc->tokenlist[num].length;
 }
 
-
+/*
+   InputParser_GetUpcaseWord..
+   Same with InputParser_GetWord , the result is converted to upcase..!
+*/
 unsigned int InputParser_GetUpcaseWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
@@ -269,7 +293,10 @@ unsigned int InputParser_GetUpcaseWord(struct InputParserC * ipc,int num,char * 
     return ipc->tokenlist[num].length;
 }
 
-
+/*
+   InputParser_GetUpcaseWord..
+   Same with InputParser_GetWord , the result is converted to lowercase..!
+*/
 unsigned int InputParser_GetLowercaseWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
@@ -285,6 +312,10 @@ unsigned int InputParser_GetLowercaseWord(struct InputParserC * ipc,int num,char
 }
 
 
+/*
+   InputParser_GetChar..
+   Returns character (pos) from token (num)..!
+*/
 char InputParser_GetChar(struct InputParserC * ipc,int num,int pos)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
@@ -294,21 +325,34 @@ char InputParser_GetChar(struct InputParserC * ipc,int num,int pos)
     return ipc->str[ipc->tokenlist[num].token_start + pos ];
 }
 
-
+/*
+   InputParser_GetWordInt..
+   Same with InputParser_GetWord , if the result can be converted to a number , it returns this number
+   else 0 is returned
+*/
 signed int InputParser_GetWordInt(struct InputParserC * ipc,int num)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
     return Str2Int_internal(ipc->str,ipc->tokenlist[num].token_start,ipc->tokenlist[num].length);
 }
 
-
+/*
+   InputParser_GetChar..
+   Returns total length of token (num)..!
+*/
 unsigned int InputParser_GetWordLength(struct InputParserC * ipc,int num)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
     return ipc->tokenlist[num].length;
 }
 
-
+/*
+   InputParser_SeperateWords..
+   Seperates words in c string (inpt) to tokens using delimiters set-up at structure ipc and keeps result at structure ipc
+   if the c string will be erased before getting back the tokens you can set the keepcopy byte to 1 , this will allocate memory to
+   keep a copy of the string..!
+   the number returned is the total of tokens extracted!
+*/
 int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcopy)
 {
 
@@ -384,13 +428,17 @@ int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcop
   return WORDS_SEPERATED;
 }
 
-
+/*
+ Same with InputParser_SeperateWords it does the (char *) type cast
+*/
 int InputParser_SeperateWordsCC(struct InputParserC * ipc,const char * inpt,char keepcopy)
 {
   return InputParser_SeperateWords(ipc,(char * )inpt,keepcopy);
 }
 
-
+/*
+ Same with InputParser_SeperateWords it does the (char *) type cast
+*/
 int InputParser_SeperateWordsUC(struct InputParserC * ipc,unsigned char * inpt,char keepcopy)
 {
   return InputParser_SeperateWords(ipc,(char * )inpt,keepcopy);
