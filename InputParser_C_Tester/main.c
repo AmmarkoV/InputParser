@@ -53,13 +53,25 @@ int main()
 
 
     printf("Creating a new instance of the parser\n");
+
     printf("Starting memory point of IPC struct is %p , and afterwards",ipc);
     ipc = InputParser_Create(256,5);
     if ( ipc == 0 ) { fprintf(stderr,"\nError Commiting InputParser Context \n"); return(1); }
     printf(" %p \n",ipc);
 
+
+    struct InputParserC * ipc2=0;
+    printf("Starting memory point of second IPC struct is %p , and afterwards",ipc2);
+    ipc2 = InputParser_Create(256,5);
+    if ( ipc2 == 0 ) { fprintf(stderr,"\nError Commiting InputParser Context \n"); return(1); }
+    printf(" %p \n",ipc2);
+
+
     printf("SelfChecking\n");
     if ( InputParser_SelfCheck(ipc) == 0 ) { fprintf(stderr,"\nInputParser Self Check Returns erroneous state \n"); return(1); }
+     printf("SelfChecking2\n");
+    if ( InputParser_SelfCheck(ipc2) == 0 ) { fprintf(stderr,"\nInputParser2 Self Check Returns erroneous state \n"); return(1); }
+
 
     printf("Checking if default delimiters work correctly\n");
     InputParser_DefaultDelimeters(ipc);
@@ -71,13 +83,18 @@ int main()
 
     char * parsemessage2 = "miden,ena,dyo,tria,tessera,pente,eksi,epta,okto,ennea,deka\0";
     ParseString(ipc,parsemessage2);
-
+    if (InputParser_WordCompare(ipc,0,"miden",5)!=1) { fprintf(stderr,"\n\n\n!!!!!!!!!!!!!!!!!! CATCHED COMPARISON ERROR !!!!!!!!!!!!!!!!!!\n\n\n");} else
+                                                     { fprintf(stderr,"Comparison check ok..\n");}
+    if (InputParser_WordCompare(ipc,1,"ena",3)!=1) { fprintf(stderr,"\n\n\n!!!!!!!!!!!!!!!!!! CATCHED COMPARISON ERROR !!!!!!!!!!!!!!!!!!\n\n\n");} else
+                                                   { fprintf(stderr,"Comparison check ok..\n");}
+    if (InputParser_WordCompare(ipc,2,"dy",2)!=0) { fprintf(stderr,"\n\n\n!!!!!!!!!!!!!!!!!! CATCHED COMPARISON ERROR !!!!!!!!!!!!!!!!!!\n\n\n");} else
+                                                  { fprintf(stderr,"Comparison check ok..\n");}
 
     char * parsemessage3 = "010\0";
     ParseString(ipc,parsemessage3);
 
     char * parsemessage4 = "\0";
-    ParseString(ipc,parsemessage4);
+    ParseString(ipc2,parsemessage4);
 
 
     char * parsemessage5 = ",,,,(),\0";

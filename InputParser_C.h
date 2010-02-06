@@ -83,12 +83,14 @@ struct InputParserC * InputParser_Create(unsigned int max_string_count,unsigned 
 void InputParser_Destroy(struct InputParserC * ipc);
 unsigned char InputParser_SelfCheck(struct InputParserC * ipc);
 
-char InputParser_GetChar(struct InputParserC * ipc,int num,int pos);
-unsigned int InputParser_GetWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize);
-unsigned int InputParser_GetUpcaseWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize);
-unsigned int InputParser_GetLowercaseWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize);
-signed int InputParser_GetWordInt(struct InputParserC * ipc,int num);
-unsigned int InputParser_GetWordLength(struct InputParserC * ipc,int num);
+char InputParser_GetChar(struct InputParserC * ipc,unsigned int num,unsigned int pos);
+unsigned char InputParser_WordCompareNoCase(struct InputParserC * ipc,unsigned int num,char * word,unsigned int wordsize);
+unsigned char InputParser_WordCompare(struct InputParserC * ipc,unsigned int num,char * word,unsigned int wordsize);
+unsigned int InputParser_GetWord(struct InputParserC * ipc,unsigned int num,char * wheretostore,unsigned int storagesize);
+unsigned int InputParser_GetUpcaseWord(struct InputParserC * ipc,unsigned int num,char * wheretostore,unsigned int storagesize);
+unsigned int InputParser_GetLowercaseWord(struct InputParserC * ipc,unsigned int num,char * wheretostore,unsigned int storagesize);
+signed int InputParser_GetWordInt(struct InputParserC * ipc,unsigned int num);
+unsigned int InputParser_GetWordLength(struct InputParserC * ipc,unsigned int num);
 
 int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcopy);
 int InputParser_SeperateWordsCC(struct InputParserC * ipc,const char * inpt,char keepcopy);

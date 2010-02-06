@@ -19,7 +19,7 @@
 */
 
 
-const char * ver=" 0.3 written from scratch - 31/1/10 \0";
+const char * ver=" 0.31 written from scratch - 31/1/10 \0";
 
 char * InputParserC_Version()
 {
@@ -247,7 +247,7 @@ unsigned char InputParser_SelfCheck(struct InputParserC * ipc)
    CheckWordNumOk..
    Checks if word with number num has allocated space in memory
 */
-inline unsigned char CheckWordNumOk(struct InputParserC * ipc,int num)
+inline unsigned char CheckWordNumOk(struct InputParserC * ipc,unsigned int num)
 {
   if ( CheckIPCOk(ipc)==0) { return 0; }
   if ( (ipc->tokenlist==0) || ( ipc->tokens_count < num ) ) { return 0; }
@@ -260,7 +260,7 @@ inline unsigned char CheckWordNumOk(struct InputParserC * ipc,int num)
    InputParser_GetWord..
    Copies token with number (num) to c string (wheretostore) , variable storagesize contains the total size of wheretostore..!
 */
-unsigned int InputParser_GetWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize)
+unsigned int InputParser_GetWord(struct InputParserC * ipc,unsigned int num,char * wheretostore,unsigned int storagesize)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
     if ( storagesize < ipc->tokenlist[num].length+1 ) /* +1 gia to \0 */ return 0;
@@ -275,11 +275,46 @@ unsigned int InputParser_GetWord(struct InputParserC * ipc,int num,char * wheret
     return ipc->tokenlist[num].length;
 }
 
+
+/*
+   InputParser_WordCompareNoCase..
+   Compares word (word) with token with number (num) , null terminating character is not required , NO CASE SENSITIVITY..!
+*/
+unsigned char InputParser_WordCompareNoCase(struct InputParserC * ipc,unsigned int num,char * word,unsigned int wordsize)
+{
+    if ( wordsize != InputParser_GetWordLength(ipc,num) ) { return 0; }
+
+    int i=0;
+    for ( i=0; i<wordsize; i++ )
+    {
+      if (toupper(ipc->str[ipc->tokenlist[num].token_start+i])!=toupper(word[i])) {  return 0; }
+    }
+    return 1;
+}
+
+
+/*
+   InputParser_WordCompare..
+   Compares word (word) with token with number (num) , null terminating character is not required..!
+*/
+unsigned char InputParser_WordCompare(struct InputParserC * ipc,unsigned int num,char * word,unsigned int wordsize)
+{
+    if ( wordsize != InputParser_GetWordLength(ipc,num) ) { return 0; }
+
+    int i=0;
+    for ( i=0; i<wordsize; i++ )
+    {
+      if (ipc->str[ipc->tokenlist[num].token_start+i]!=word[i]) {  return 0; }
+    }
+    return 1;
+}
+
+
 /*
    InputParser_GetUpcaseWord..
    Same with InputParser_GetWord , the result is converted to upcase..!
 */
-unsigned int InputParser_GetUpcaseWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize)
+unsigned int InputParser_GetUpcaseWord(struct InputParserC * ipc,unsigned int num,char * wheretostore,unsigned int storagesize)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
     if ( storagesize < ipc->tokenlist[num].length+1 ) /* +1 gia to \0 */  return 0;
@@ -297,7 +332,7 @@ unsigned int InputParser_GetUpcaseWord(struct InputParserC * ipc,int num,char * 
    InputParser_GetUpcaseWord..
    Same with InputParser_GetWord , the result is converted to lowercase..!
 */
-unsigned int InputParser_GetLowercaseWord(struct InputParserC * ipc,int num,char * wheretostore,unsigned storagesize)
+unsigned int InputParser_GetLowercaseWord(struct InputParserC * ipc,unsigned int num,char * wheretostore,unsigned int storagesize)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
     if ( storagesize < ipc->tokenlist[num].length+1 ) /* +1 gia to \0 */  return 0;
@@ -316,7 +351,7 @@ unsigned int InputParser_GetLowercaseWord(struct InputParserC * ipc,int num,char
    InputParser_GetChar..
    Returns character (pos) from token (num)..!
 */
-char InputParser_GetChar(struct InputParserC * ipc,int num,int pos)
+char InputParser_GetChar(struct InputParserC * ipc,unsigned int num,unsigned int pos)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
 
@@ -330,7 +365,7 @@ char InputParser_GetChar(struct InputParserC * ipc,int num,int pos)
    Same with InputParser_GetWord , if the result can be converted to a number , it returns this number
    else 0 is returned
 */
-signed int InputParser_GetWordInt(struct InputParserC * ipc,int num)
+signed int InputParser_GetWordInt(struct InputParserC * ipc,unsigned int num)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
     return Str2Int_internal(ipc->str,ipc->tokenlist[num].token_start,ipc->tokenlist[num].length);
@@ -340,7 +375,7 @@ signed int InputParser_GetWordInt(struct InputParserC * ipc,int num)
    InputParser_GetChar..
    Returns total length of token (num)..!
 */
-unsigned int InputParser_GetWordLength(struct InputParserC * ipc,int num)
+unsigned int InputParser_GetWordLength(struct InputParserC * ipc,unsigned int num)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
     return ipc->tokenlist[num].length;
