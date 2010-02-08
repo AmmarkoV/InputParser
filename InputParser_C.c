@@ -19,11 +19,11 @@
 */
 
 
-const char * ver=" 0.31 written from scratch - 31/1/10 \0";
+const char * _ipc_ver=" 0.31 written from scratch - 31/1/10 \0";
 
 char * InputParserC_Version()
 {
-  return (char *) ver;
+  return (char *) _ipc_ver;
 }
 
 
@@ -211,7 +211,7 @@ inline unsigned char CheckDelimeterNumOk(struct InputParserC * ipc,int num)
    SetDelimeter..
    Sets Delimeter number num with value tmp
 */
-void SetDelimeter(struct InputParserC * ipc,int num,char tmp)
+void InputParser_SetDelimeter(struct InputParserC * ipc,int num,char tmp)
 {
     if (CheckDelimeterNumOk(ipc,num)==0) { return;}
     ipc->delimeters[num]=tmp;
@@ -221,7 +221,7 @@ void SetDelimeter(struct InputParserC * ipc,int num,char tmp)
    GetDelimeter..
    Returns value of  Delimeter with number num
 */
-char GetDelimeter(struct InputParserC * ipc,int num)
+char InputParser_GetDelimeter(struct InputParserC * ipc,int num)
 {
     if (CheckDelimeterNumOk(ipc,num)==0) { return 0;}
     return ipc->delimeters[num];
@@ -351,7 +351,7 @@ unsigned int InputParser_GetLowercaseWord(struct InputParserC * ipc,unsigned int
    InputParser_GetChar..
    Returns character (pos) from token (num)..!
 */
-char InputParser_GetChar(struct InputParserC * ipc,unsigned int num,unsigned int pos)
+char InputParser_GetWordChar(struct InputParserC * ipc,unsigned int num,unsigned int pos)
 {
     if ( CheckWordNumOk(ipc,num) == 0 ) { return 0; }
 
