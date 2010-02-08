@@ -19,7 +19,7 @@
 */
 
 
-const char * _ipc_ver=" 0.31 written from scratch - 31/1/10 \0";
+const char * _ipc_ver=" 0.32 written from scratch - 8/2/10 \0";
 
 char * InputParserC_Version()
 {
@@ -203,8 +203,8 @@ void InputParser_Destroy(struct InputParserC * ipc)
 */
 inline unsigned char CheckDelimeterNumOk(struct InputParserC * ipc,int num)
 {
-    if ( ipc->max_delimeter_count <= num ) return 1;
-    return 0;
+    if ( ipc->max_delimeter_count <= num ) return 0;
+    return 1;
 }
 
 /*

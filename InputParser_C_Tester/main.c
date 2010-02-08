@@ -5,6 +5,79 @@
 
 #define max_ret_word 256
 
+void ParseString(struct InputParserC * ipc,char * thestr);
+int IntermediateTests();
+
+
+
+int main()
+{
+    //InputParserC is a library to tokenize words from a string "zero,one,two,three(four)" -> "zero" "one" "two" "three" "four"..!
+    printf("Hello World , InputParserC linked version is %s \n",InputParserC_Version());
+
+    //To use it you must first allocate a InputParserC structure!
+     struct InputParserC * ipc=0;
+    //After you declared the structure you will have to initialize it to accomodate the data you want to input
+    //The next command initializes our input parser to accomodate a max of 512 different words , which result from 5 seperating delimeters
+    //In the example "zero,one,two,three(four)" the delimeters used are  , ( ) and \0
+     ipc = InputParser_Create(512,5);
+
+
+    // The default delimiters are..
+    printf("The default delimiters are.. ");
+    int i=0;
+    for ( i = 0; i< ipc->max_delimeter_count; i++ )
+    {
+      printf("%u ascii or   %c  ",InputParser_GetDelimeter(ipc,i),InputParser_GetDelimeter(ipc,i));
+    }
+
+     //We will now tokenize the string "zero,one,two,three(four)" , we set the last parameter to zero to indicate that
+     //input parser should keep a copy of the string , because after the call is done it will be disposed of..!
+     //The return value ( res ) is the number of tokens extracted!
+     int res = InputParser_SeperateWords(ipc,"zero,one,2,three(four)",1);
+     printf("\nInput Parser tokenized a total of %u tokens \n",res);
+
+     //To retrieve the tokens as a string you will need some memory to store the strings in!
+     //The following word_space has space for a string with up to 128 characters
+     char word_space[128]={0};
+
+     //We now want to get the token with number 1 and store it in word_space!
+     //Please note that the tokens are counted from 0 to n-1 where n is the total number of tokens..
+    /*
+       "zero,one,two,three(four)"
+          0   1   2    3     4    = a total of n=5 tokens !
+    */
+
+     // The following command will return the second token ( token with number 1 ) and store it to the word_space
+     // that contains up to 128 character strings
+     InputParser_GetWord(ipc,1,word_space,128);
+     printf("InputParser_GetWord returns %s\n",word_space);
+
+     //If you want you can retrieve an upcase/lowercase version of the string
+     InputParser_GetUpcaseWord(ipc,1,word_space,128);
+     printf("InputParser_GetUpcaseWord returns %s\n",word_space);
+
+     //If the token is a number you can return an integer! :)
+     i = InputParser_GetWordInt(ipc,2);
+     printf("InputParser_GetWordInt(ipc,2) should return 2 , our build returns %u\n",i);
+
+     // After you are finished with the InputParser , you should deallocate it to free memory..!
+     InputParser_Destroy(ipc);
+
+     printf("\n\nThat concludes the rationale tutorial \n Press any key to start XP bug check.. \n\n",res);
+     getchar();
+    // Now run some tests to find bugs , if they return 0 SeperateWordsC should be working ok!
+    return IntermediateTests();
+}
+
+
+/*
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    XP / BUG FINDING TESTS!
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+*/
+
+
 void ParseString(struct InputParserC * ipc,char * thestr)
 {
     int i,z;
@@ -41,11 +114,9 @@ void ParseString(struct InputParserC * ipc,char * thestr)
 
 
 
-
-
-int main()
+int IntermediateTests()
 {
-    time_t startmsec = time(NULL) * 1000;
+   time_t startmsec = time(NULL) * 1000;
 
     printf("Testing InputParserC ");
     struct InputParserC * ipc=0;
