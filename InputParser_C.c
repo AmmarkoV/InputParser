@@ -250,7 +250,7 @@ unsigned char InputParser_SelfCheck(struct InputParserC * ipc)
 inline unsigned char CheckWordNumOk(struct InputParserC * ipc,unsigned int num)
 {
   if ( CheckIPCOk(ipc)==0) { return 0; }
-  if ( (ipc->tokenlist==0) || ( ipc->tokens_count < num ) ) { return 0; }
+  if ( (ipc->tokenlist==0) || ( ipc->tokens_count <= num ) ) { return 0; }
 
 
   return 1;
@@ -283,7 +283,6 @@ unsigned int InputParser_GetWord(struct InputParserC * ipc,unsigned int num,char
 unsigned char InputParser_WordCompareNoCase(struct InputParserC * ipc,unsigned int num,char * word,unsigned int wordsize)
 {
     if ( wordsize != InputParser_GetWordLength(ipc,num) ) { return 0; }
-
     int i=0;
     for ( i=0; i<wordsize; i++ )
     {
@@ -392,11 +391,12 @@ int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcop
 {
 
   if (CheckIPCOk(ipc)==0) { return 0; }
+  if  ( inpt == 0 ) return 0; // NULL INPUT -> NULL OUTPUT
 
   unsigned int   STRING_END = strlen(inpt) ;
   int WORDS_SEPERATED = 0 , NEXT_SHOULD_NOT_BE_A_DELIMITER=1 , FOUND_DELIMETER ; // Ignores starting ,,,,,string,etc
 
-
+  if ( STRING_END == 0 ) { return 0; } // NULL INPUT -> NULL OUTPUT pt 2
 
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // COPY STRING ( OR POINTER ) TO IPC STRUCTURE

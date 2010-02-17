@@ -110,6 +110,12 @@ void ParseString(struct InputParserC * ipc,char * thestr)
                            printf(" %u = %s ",i,word_space); } printf("\n\n");
 
 
+    printf("Erroneous String Check ");
+    strcpy(word_space,"");
+    for (i=res; i<res+2; i++) { InputParser_GetWord(ipc,i,word_space,max_ret_word);
+                           printf(" %u = %s ",i,word_space); } printf("\n\n");
+
+
 }
 
 
