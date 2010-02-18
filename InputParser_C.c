@@ -19,7 +19,7 @@
 */
 
 
-const char * _ipc_ver=" 0.32 written from scratch - 8/2/10 \0";
+const char * _ipc_ver=" 0.33 ( 1/3 ) written from scratch - 8/2/10 \0";
 
 char * InputParserC_Version()
 {
@@ -133,6 +133,10 @@ struct InputParserC * InputParser_Create(unsigned int max_string_count,unsigned 
     ipc->guardbyte3.checksum=66666;
     ipc->guardbyte4.checksum=66666;
 
+    ipc->local_allocation = 0; // No allocation by default! :)
+    ipc->str_length=0;
+    ipc->str=0;
+
     InputParser_DefaultDelimeters(ipc);
 
     return ipc;
@@ -147,14 +151,16 @@ void InputParser_Destroy(struct InputParserC * ipc)
 {
     if ( ipc == 0 ) { return; }
 
+    //fprintf(stderr,"InputParserC freeing delimeters\n");
     if ( ipc->delimeters != 0 )
     {
      free(ipc->delimeters);
-     ipc->delimeters=0;
+     //ipc->delimeters=0;
     }
     ipc->cur_delimeter_count=0;
     ipc->max_delimeter_count=0;
 
+/*
     if ( ipc->container_start != 0 )
      {
        free(ipc->container_start);
@@ -165,19 +171,22 @@ void InputParser_Destroy(struct InputParserC * ipc)
        free(ipc->container_end);
        ipc->container_end=0;
      }
+     */
     ipc->cur_container_count = 0;
     ipc->max_container_count = 0;
 
+    //fprintf(stderr,"InputParserC freeing tokenlist\n");
     if ( ipc->tokenlist != 0 )
      {
       free(ipc->tokenlist);
-      ipc->tokenlist=0;
+      //ipc->tokenlist=0;
      }
     ipc->tokens_max=0;
     ipc->tokens_count=0;
 
-    if ( ipc->local_allocation == 1 ) { free(ipc->str); }
-    ipc->local_allocation=0;
+    //fprintf(stderr,"InputParserC freeing local allocation\n");
+    if ( ipc->local_allocation == 1 ) { if ( ipc->str!=0 ) free(ipc->str); }
+    //ipc->local_allocation=0;
     ipc->str_length=0;
 
 
@@ -188,6 +197,7 @@ void InputParser_Destroy(struct InputParserC * ipc)
     ipc->guardbyte3.checksum = 0;
     ipc->guardbyte4.checksum = 0;
 
+    //fprintf(stderr,"InputParserC freeing ipc\n");
     free(ipc);
 
 
