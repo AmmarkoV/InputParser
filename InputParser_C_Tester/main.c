@@ -64,10 +64,11 @@ int main()
      // After you are finished with the InputParser , you should deallocate it to free memory..!
      InputParser_Destroy(ipc);
 
-     printf("\n\nThat concludes the rationale tutorial \n Press any key to start XP bug check.. \n\n",res);
+     printf("\n\nThat concludes the rationale tutorial \n Press any key to start XP bug check.. \n\n");
      getchar();
     // Now run some tests to find bugs , if they return 0 SeperateWordsC should be working ok!
-    return IntermediateTests();
+  return IntermediateTests();
+
 }
 
 
@@ -88,7 +89,7 @@ void ParseString(struct InputParserC * ipc,char * thestr)
     time_t msec = time(NULL) * 1000;
     int res = InputParser_SeperateWords(ipc,thestr,0);
     time_t msec2 = time(NULL) * 1000;
-    printf("Words Seperated ( %u ) at %u msec.. ",res,msec2-msec);
+    printf("Words Seperated ( %u ) at %u msec.. ",res,(unsigned int) (msec2-msec));
 
     printf("Int Check ");
     for (i=0; i<res; i++) {  z=InputParser_GetWordInt(ipc,i); printf(" %u = %u ",i,z); } printf("\n\n");
@@ -180,13 +181,34 @@ int IntermediateTests()
     char * parsemessage6 = "FORWARD(45)\0";
     ParseString(ipc,parsemessage6);
 
+
+    char * parsemessage7 = "0,1,2,-45,-0.0,1,1000000000000000\0";
+    ParseString(ipc2,parsemessage7);
+
+
+    // MINI DATE TEST
+        struct InputParserC * ipc3=0;
+        ipc3 = InputParser_Create(50,2);
+        InputParser_SetDelimeter(ipc3,1,'/');
+        int res = InputParser_SeperateWords(ipc3,"0/0/0",0);
+         if ( res >= 3 )
+         {
+           int year=InputParser_GetWordInt(ipc3,2);
+           int month=InputParser_GetWordInt(ipc3,1);
+           int day=InputParser_GetWordInt(ipc3,0);
+           year = month + day;
+         }
+         InputParser_Destroy(ipc3);
+    // MINI DATE TEST
+
+
     printf("Deleting the new instance of the parser\n");
     InputParser_Destroy(ipc);
-
+    InputParser_Destroy(ipc2);
     printf("InputParser Instances destructed.. \n");
 
     time_t endmsec = time(NULL) * 1000;
-    printf("\n%u total msec.. \n",endmsec-startmsec);
+    printf("\n%u total msec.. \n",(unsigned int) (endmsec-startmsec));
 
     return 0;
 }

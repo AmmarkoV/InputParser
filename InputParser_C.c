@@ -108,7 +108,7 @@ void InputParser_DefaultDelimeters(struct InputParserC * ipc)
 */
 struct InputParserC * InputParser_Create(unsigned int max_string_count,unsigned int max_delimiter_count)
 {
-    struct InputParserC * ipc;
+    struct InputParserC * ipc=0;
 
     ipc = ( struct InputParserC * ) malloc ( sizeof ( struct InputParserC ) );
     if ( ipc  == 0 ) { fprintf(stderr,"InputParserC unable to commit memory for a new instance\n"); return 0; }
