@@ -1,8 +1,9 @@
 #include "InputParser_C.h"
 /* InputParser..
    A small generic library for parsing a string and tokenizing it!
-   URLs: http://62.103.22.50
-   Written by Ammar Qammaz a.k.a. AmmarkoV 2006
+   GITHUB Repo : http://github.com/AmmarkoV/InputParser
+   my URLs: http://ammarkov.ath.cx
+   Written by Ammar Qammaz a.k.a. AmmarkoV 2006-2010
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -32,7 +33,8 @@ inline signed int Str2Int_internal(char * inpt,unsigned int start_from,unsigned 
     if ( inpt == 0 ) { fprintf(stderr,"Null string to Str2IntInternal!\n"); return 0;}
     int intresult,multiplier,curnum;
     intresult=0,multiplier=1,curnum=0;
-    unsigned char error_flag; error_flag=0;
+    unsigned char error_flag;
+    error_flag=0;
     signed int i;
 
     /*fprintf(stderr,"Converting to int string (%p) begining from %u and ending at %u ",inpt,start_from,start_from+length);*/
