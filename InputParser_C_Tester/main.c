@@ -111,12 +111,46 @@ void ParseString(struct InputParserC * ipc,char * thestr)
                            printf(" %u = %s ",i,word_space); } printf("\n\n");
 
 
-    printf("Erroneous String Check ");
+    printf("First Erroneous String Check ");
     strcpy(word_space,"");
     for (i=res; i<res+2; i++) { InputParser_GetWord(ipc,i,word_space,max_ret_word);
-                           printf(" %u = %s ",i,word_space); } printf("\n\n");
+                                printf(" %u = %s ",i,word_space); } printf("\n\n");
 
+    printf("Second Erroneous String Check ");
+    char * empty_place_to_pass_string = 0;
+    for (i=res; i<res+2; i++) { InputParser_GetWord(ipc,i,empty_place_to_pass_string,0);
+                                printf(" %u = %s ",i,word_space); } printf("\n\n");
 
+    printf("Third Erroneous String Check ");
+    strcpy(word_space,"");
+    for (i=res; i<res+2; i++) { InputParser_GetWord(ipc,i,word_space,max_ret_word);
+                                printf(" %u = %s ",i,word_space); } printf("\n\n");
+
+    char check_test[max_ret_word]={0};
+    printf("Make a bogus WordCompare check ");
+    for (i=0; i<res; i++) { InputParser_GetLowercaseWord(ipc,i,check_test,max_ret_word);
+                            if ( InputParser_WordCompareNoCase(ipc,i,check_test,strlen(check_test)) ) { printf(" (%u) success " , i ); } else
+                                                                                                {
+                                                                                                  printf(" Error at string with number %u and content %s \n" , i ,  check_test);
+                                                                                                }
+
+                          } printf("\n\n");
+
+    unsigned int retries=0 , max_retries=10000 , errors = 0;
+    printf("Bashing WordCompare checks ");
+        for (i=0; i<res; i++)
+                          {
+                             for ( retries=0; retries<max_retries; retries++ )
+                              {
+                                InputParser_GetLowercaseWord(ipc,i,check_test,max_ret_word);
+                                if ( InputParser_WordCompareNoCase(ipc,i,check_test,strlen(check_test)) ) {  } else
+                                                                                                          { ++errors; }
+                                InputParser_GetWord(ipc,i,check_test,max_ret_word);
+                                if ( InputParser_WordCompare(ipc,i,check_test,strlen(check_test)) ) {  } else  {   }
+
+                              }
+
+                          }
 }
 
 
@@ -184,6 +218,10 @@ int IntermediateTests()
 
     char * parsemessage7 = "0,1,2,-45,-0.0,1,1000000000000000\0";
     ParseString(ipc2,parsemessage7);
+
+
+    char * parsemessage8 = "DEPTH MAP,(192.168.1.1)\n\0";
+    ParseString(ipc,parsemessage8);
 
 
     // MINI DATE TEST

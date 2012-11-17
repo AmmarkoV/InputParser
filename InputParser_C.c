@@ -20,7 +20,7 @@
 */
 
 
-const char * _ipc_ver=" 0.33 ( 1/3 ) written from scratch - 8/2/10 \0";
+const char * _ipc_ver=" 0.356 written from scratch - 8/2/10 \0";
 
 char * InputParserC_Version()
 {
@@ -28,23 +28,109 @@ char * InputParserC_Version()
 }
 
 
+
+int InputParser_ClearNonCharacters(char * inpt , unsigned int length)
+{
+   unsigned int skip_chars=0;
+   unsigned int i=0;
+   while  (i<length)
+    {
+       if (inpt[i]<' ') /*The characters before space should be filtered*/
+        {
+          ++skip_chars;
+        }
+
+        if (skip_chars>0)
+        {
+           if (i+skip_chars>=length)
+             {
+                inpt[i]=0;
+             } else
+             {
+                inpt[i]=inpt[i+skip_chars];
+             }
+        }
+      ++i;
+    }
+   return 1;
+}
+
+
+
+int InputParser_TrimCharactersStart(char * inpt , unsigned int length,char what2trim)
+{
+   unsigned int skip_chars=0;
+   unsigned int i=0;
+
+
+   while ((inpt[skip_chars]==what2trim)&&(skip_chars<length)) { ++skip_chars; }
+
+   while  (i<length)
+    {
+        if (skip_chars>0)
+        {
+           if (i+skip_chars>=length)
+             {
+                inpt[i]=0;
+             } else
+             {
+                inpt[i]=inpt[i+skip_chars];
+             }
+        }
+      ++i;
+    }
+
+   return 1;
+}
+
+
+int InputParser_TrimCharactersEnd(char * inpt , unsigned int length,char what2trim)
+{
+   if ( strlen(inpt)!=length ) { length=strlen(inpt); }
+   if ( length==0 ) { return 1;}
+   if ( (length==1) && (inpt[0]==what2trim) ) {  inpt[0]=0; return 1; } else
+   if ( length==1 )                           { return 1; }
+
+   unsigned int i;
+   i=length-1;
+   while ((inpt[i]==what2trim)&&(i>0)) { --i; }
+   if ( i==length-1 ) { /*No chars found*/ return 1; }
+
+   if ((i==0) && (inpt[0]==what2trim) ) { inpt[0]=0; } else
+                                        {
+                                          inpt[i+1]=0;
+                                        }
+   return 1;
+}
+
+int InputParser_TrimCharacters(char * inpt , unsigned int length,char what2trim)
+{
+  int i=0;
+  i=InputParser_TrimCharactersStart(inpt,length,what2trim);
+  if (i==0) { return 0; }
+
+  return InputParser_TrimCharactersEnd(inpt,length,what2trim);
+}
+
 inline signed int Str2Int_internal(char * inpt,unsigned int start_from,unsigned int length)
 {
     if ( inpt == 0 ) { fprintf(stderr,"Null string to Str2IntInternal!\n"); return 0;}
-    int intresult,multiplier,curnum;
-    intresult=0,multiplier=1,curnum=0;
+    int intresult;
+    int multiplier;
+    int curnum;
     unsigned char error_flag;
-    error_flag=0;
+    unsigned char trailing_sign_seek;
+    unsigned char positive_number;
     signed int i;
 
+    intresult=0,multiplier=1,curnum=0;
+    error_flag=0 , trailing_sign_seek=1 , positive_number=1;
     /*fprintf(stderr,"Converting to int string (%p) begining from %u and ending at %u ",inpt,start_from,start_from+length);*/
     for (i=start_from+length-1; i>=start_from; i--)
     {
-        if ( i < 0 ) { /*fprintf("Gone negative! %u \n",i);*/
-                       break; }
-        /*fprintf(stderr,"Translating %u , %c \n",i,inpt[i]);*/
-        curnum=(char) (inpt[i])-'0';
+        if ( i < 0 ) { /*fprintf("Gone negative! %u \n",i);*/ break; }
 
+        curnum=(char) (inpt[i])-'0';
         if ((curnum>=0)&(curnum<=9))
         {
             intresult=intresult+(multiplier*curnum);
@@ -54,9 +140,16 @@ inline signed int Str2Int_internal(char * inpt,unsigned int start_from,unsigned 
         {
             error_flag=1;
         }
+
+      if (trailing_sign_seek)
+       {
+          //fprintf(stderr,"Run to %c while searching for sign \n",inpt[i]);
+          if (inpt[i]=='+') { trailing_sign_seek=0; } else
+          if (inpt[i]=='-') { trailing_sign_seek=0; positive_number=0; }
+       }
     }
 
-
+    if (!positive_number) { intresult = intresult * (-1); }
     return intresult;
 }
 
@@ -295,14 +388,31 @@ unsigned int InputParser_GetWord(struct InputParserC * ipc,unsigned int num,char
 */
 unsigned char InputParser_WordCompareNoCase(struct InputParserC * ipc,unsigned int num,char * word,unsigned int wordsize)
 {
+    //fprintf(stderr,"InputParser_WordCompareNoCase( %u , %s , %u )",num,word,wordsize);
     if ( wordsize != InputParser_GetWordLength(ipc,num) ) { return 0; }
+    //if (  ipc->str_length <= ipc->tokenlist[num].token_start+wordsize ) { fprintf(stderr,"Erroneous input on InputParser_WordCompareNoCase leads out of array \n"); return 0; }
+
     int i=0;
     for ( i=0; i<wordsize; i++ )
     {
-      if (toupper(ipc->str[ipc->tokenlist[num].token_start+i])!=toupper(word[i])) {  return 0; }
+      if (toupper(ipc->str[ipc->tokenlist[num].token_start+i])!=toupper(word[i])) { /*fprintf(stderr," returning fail ");*/  return 0; }
     }
+
+    //fprintf(stderr," returning success ");
     return 1;
 }
+
+/*
+   InputParser_WordCompareNoCase..
+   Compares word (word) with token with number (num) , null terminating character is required , NO CASE SENSITIVITY..!
+*/
+unsigned char InputParser_WordCompareNoCaseAuto(struct InputParserC * ipc,unsigned int num,char * word)
+{
+    if (word==0) { return 0; }
+    unsigned int wordsize=strlen(word);
+    return InputParser_WordCompareNoCase(ipc,num,word,wordsize);
+}
+
 
 
 /*
@@ -312,6 +422,7 @@ unsigned char InputParser_WordCompareNoCase(struct InputParserC * ipc,unsigned i
 unsigned char InputParser_WordCompare(struct InputParserC * ipc,unsigned int num,char * word,unsigned int wordsize)
 {
     if ( wordsize != InputParser_GetWordLength(ipc,num) ) { return 0; }
+    //if (  ipc->str_length <= ipc->tokenlist[num].token_start+wordsize ) { fprintf(stderr,"Erroneous input on InputParser_WordCompareNoCase leads out of array \n"); return 0; }
 
     int i=0;
     for ( i=0; i<wordsize; i++ )
@@ -319,6 +430,17 @@ unsigned char InputParser_WordCompare(struct InputParserC * ipc,unsigned int num
       if (ipc->str[ipc->tokenlist[num].token_start+i]!=word[i]) {  return 0; }
     }
     return 1;
+}
+
+/*
+   InputParser_WordCompareNoCase..
+   Compares word (word) with token with number (num) , null terminating character is required , NO CASE SENSITIVITY..!
+*/
+unsigned char InputParser_WordCompareAuto(struct InputParserC * ipc,unsigned int num,char * word)
+{
+    if (word==0) { return 0; }
+    unsigned int wordsize=strlen(word);
+    return InputParser_WordCompare(ipc,num,word,wordsize);
 }
 
 
