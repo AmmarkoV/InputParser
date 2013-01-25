@@ -81,6 +81,7 @@ int main()
 
 void ParseString(struct InputParserC * ipc,char * thestr)
 {
+    float fl;
     int i,z;
     char word_space[max_ret_word]={0};
 
@@ -93,6 +94,10 @@ void ParseString(struct InputParserC * ipc,char * thestr)
 
     printf("Int Check ");
     for (i=0; i<res; i++) {  z=InputParser_GetWordInt(ipc,i); printf(" %u = %u ",i,z); } printf("\n\n");
+
+
+    printf("Float Check ");
+    for (i=0; i<res; i++) {  fl=InputParser_GetWordFloat(ipc,i); printf(" %u = %05f ",i,fl); } printf("\n\n");
 
     printf("Length Check ");
     for (i=0; i<res; i++) { printf(" %u = %u ",i,InputParser_GetWordLength(ipc,i)); } printf("\n\n");
@@ -189,11 +194,11 @@ int IntermediateTests()
     InputParser_DefaultDelimeters(ipc);
 
 
-    char * parsemessage = "0,1,2,3,4,5,,6,7,8,9,10\0";
+    char parsemessage[] = "0,1,2,3,4,5,,6,7,8,9,10\0";
     ParseString(ipc,parsemessage);
 
 
-    char * parsemessage2 = "miden,ena,dyo,tria,tessera,pente,eksi,epta,okto,ennea,deka\0";
+    char parsemessage2[] = "miden,ena,dyo,tria,tessera,pente,eksi,epta,okto,ennea,deka\0";
     ParseString(ipc,parsemessage2);
     if (InputParser_WordCompare(ipc,0,"miden",5)!=1) { fprintf(stderr,"\n\n\n!!!!!!!!!!!!!!!!!! CATCHED COMPARISON ERROR !!!!!!!!!!!!!!!!!!\n\n\n");} else
                                                      { fprintf(stderr,"Comparison check ok..\n");}
@@ -202,26 +207,30 @@ int IntermediateTests()
     if (InputParser_WordCompare(ipc,2,"dy",2)!=0) { fprintf(stderr,"\n\n\n!!!!!!!!!!!!!!!!!! CATCHED COMPARISON ERROR !!!!!!!!!!!!!!!!!!\n\n\n");} else
                                                   { fprintf(stderr,"Comparison check ok..\n");}
 
-    char * parsemessage3 = "010\0";
+    char parsemessage3[] = "010\0";
     ParseString(ipc,parsemessage3);
 
-    char * parsemessage4 = "\0";
+    char parsemessage4[] = "\0";
     ParseString(ipc2,parsemessage4);
 
 
-    char * parsemessage5 = ",,,,(),\0";
+    char parsemessage5[] = ",,,,(),\0";
     ParseString(ipc,parsemessage5);
 
-    char * parsemessage6 = "FORWARD(45)\0";
+    char parsemessage6[] = "FORWARD(45)\0";
     ParseString(ipc,parsemessage6);
 
 
-    char * parsemessage7 = "0,1,2,-45,-0.0,1,1000000000000000\0";
+    char parsemessage7[] = "0,1,2,-45,-0.0,1,1000000000000000\0";
     ParseString(ipc2,parsemessage7);
 
 
-    char * parsemessage8 = "DEPTH MAP,(192.168.1.1)\n\0";
+    char parsemessage8[] = "DEPTH MAP,(192.168.1.1)\n\0";
     ParseString(ipc,parsemessage8);
+
+
+    char parsemessage9[] = "POS(hand,1000,   2.0,1.0,3.0 , 0.0,0.0,0.0,0.0314169\0";
+    ParseString(ipc,parsemessage9);
 
 
     // MINI DATE TEST
