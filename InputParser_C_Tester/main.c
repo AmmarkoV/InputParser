@@ -229,9 +229,12 @@ int IntermediateTests()
     ParseString(ipc,parsemessage8);
 
 
-    char parsemessage9[] = "POS(hand,1000,   2.0,1.0,3.0 , 0.0,0.0,0.0,0.0314169\0";
+    char parsemessage9[] = "POS(hand,1000,   2.0,1.0,-3.0 , 0.0,0.0,0.0,-0.0314169\0";
     ParseString(ipc,parsemessage9);
 
+    fprintf(stderr,"This line should crash to remind us of the correct way to declare a string..\n");
+    char * parsemessage10 = "POS(hand,1000,   -2.0,1.0,3.0 , 0.0,0.0,0.0,-0.0314169\0";
+    ParseString(ipc,parsemessage10);
 
     // MINI DATE TEST
         struct InputParserC * ipc3=0;
