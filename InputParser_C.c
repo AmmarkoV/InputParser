@@ -22,7 +22,7 @@
 #define WARN_ABOUT_INCORRECTLY_ALLOCATED_STACK_STRINGS 1
 
 
-const char * _ipc_ver=" 0.356 written from scratch - 8/2/10 \0";
+char _ipc_ver[]=" 0.356 written from scratch - 8/2/10 \0";
 
 char * InputParserC_Version()
 {
