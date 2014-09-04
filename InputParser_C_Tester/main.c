@@ -3,6 +3,17 @@
 #include "../InputParser_C.h"
 #include <time.h>
 
+
+#define NORMAL   "\033[0m"
+#define BLACK   "\033[30m"      /* Black */
+#define RED     "\033[31m"      /* Red */
+#define GREEN   "\033[32m"      /* Green */
+#define YELLOW  "\033[33m"      /* Yellow */
+#define BLUE    "\033[34m"      /* Blue */
+#define MAGENTA "\033[35m"      /* Magenta */
+#define CYAN    "\033[36m"      /* Cyan */
+#define WHITE   "\033[37m"      /* White */
+
 #define max_ret_word 256
 
 void ParseString(struct InputParserC * ipc,char * thestr);
@@ -86,7 +97,7 @@ void ParseString(struct InputParserC * ipc,char * thestr)
     char word_space[max_ret_word]={0};
 
 
-    printf("\n\nParsing a string..  ( %s ) \n",thestr);
+    printf(MAGENTA "\n\nParsing a string..  ( %s ) \n" NORMAL,thestr);
     time_t msec = time(NULL) * 1000;
     int res = InputParser_SeperateWords(ipc,thestr,0);
     time_t msec2 = time(NULL) * 1000;
@@ -236,6 +247,13 @@ int IntermediateTests()
     char * parsemessage10 = "POS(hand,1000,   -2.0,1.0,3.0 , 0.0,0.0,0.0,-0.0314169\0";
     ParseString(ipc,parsemessage10);
 
+    char parsemessage11[] = "3.141567\n\0";
+    ParseString(ipc,parsemessage11);
+
+    char parsemessage12[] = "3.141567,3.141567\n,3.141567\0";
+    ParseString(ipc,parsemessage12);
+
+
     // MINI DATE TEST
         struct InputParserC * ipc3=0;
         ipc3 = InputParser_Create(50,2);
@@ -259,6 +277,8 @@ int IntermediateTests()
 
     time_t endmsec = time(NULL) * 1000;
     printf("\n%u total msec.. \n",(unsigned int) (endmsec-startmsec));
+
+    printf(GREEN "Passed..\n" NORMAL);
 
     return 0;
 }
