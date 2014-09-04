@@ -570,25 +570,22 @@ float InputParser_GetWordFloat(struct InputParserC * ipc,unsigned int num)
    //Our string is a "string_segment" , and its last character ( which will be temporary become null ) is last_char_of_string_segment
 
 
-  if (!isLocallyAllocated)
-  {
-   string_segment = (char*) malloc( (tokenLength+1) * sizeof(char) );
-   if (string_segment==0)
-   {
-     fprintf(stderr,"InputParser_GetWordFloat could not allocate memory to return float value , returning NaN \n");
-     return NAN;
-   }
+   if (!isLocallyAllocated)
+    {
+     string_segment = (char*) malloc( (tokenLength+1) * sizeof(char) );
+     if (string_segment==0)
+      {
+        fprintf(stderr,"InputParser_GetWordFloat could not allocate memory to return float value , returning NaN \n");
+        return NAN;
+      }
 
-   last_char_of_string_segment = string_segment + ipc->tokenlist[num].length;
-
-  } else
-  {
-   string_segment = ipc->str+ipc->tokenlist[num].token_start;
-   last_char_of_string_segment = string_segment + ipc->tokenlist[num].length;
-  }
-
-
-
+     strncpy(string_segment,ipc->str+tokenStart,tokenLength);
+     last_char_of_string_segment = string_segment + ipc->tokenlist[num].length;
+    } else
+    {
+     string_segment = ipc->str+tokenStart;
+     last_char_of_string_segment = string_segment + ipc->tokenlist[num].length;
+    }
 
    if (tokenStart + tokenLength < stringLength)
    {
@@ -599,23 +596,20 @@ float InputParser_GetWordFloat(struct InputParserC * ipc,unsigned int num)
 
 
    #if USE_SCANF
+    //fprintf(stderr,"Using sscanf to parse %s \n",string_segment);
     #warning "scanf without field width limits can crash with huge input data on libc versions older than 2.13-25. Add a field width specifier to fix this problem"
     /*
       Sample program that can crash:
-
       #include <stdio.h>
       int main()
-       {
-        int a;
-        scanf("%i", &a);
-        return 0;
-       }
+       { int a; scanf("%i", &a); return 0; }
 
       To make it crash:
       perl -e 'print "5"x2100000' | ./a.out|
     */
     sscanf(string_segment,"%f",&return_value);
    #else
+    //fprintf(stderr,"Using atof to parse %s \n",string_segment);
     return_value=atof(string_segment);
    #endif // USE_SCANF
 
