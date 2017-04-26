@@ -1,3 +1,22 @@
+/** @file InputParser_C.h
+ *  @brief A very handy string tokenizer for C this basically a swiss army knife kind code segment that can be used wherever we get strings
+ *         and we want to seperate them. This code is used in many of my projects including and not limited to
+ *         https://github.com/AmmarkoV/RoboVision
+ *         https://github.com/AmmarkoV/FlashySlideshows
+ *         https://github.com/AmmarkoV/RGBDAcquisition
+ *         https://github.com/AmmarkoV/AmmarServer
+ * Basic usage is the following
+
+   struct InputParserC * ipc=0;
+   ipc = InputParser_Create(512,5);     //We want to separte lines of Max 512 different strings seperated using 5 delimiters
+   InputParser_SetDelimeter(ipc,0,' '); //We want to seperate spaces
+
+ *
+ *  @author Ammar Qammaz (AmmarkoV)
+ *  @bug This is not yet thread safe
+ */
+
+
 #ifndef _INPUTPARSER_C_H_
 #define _INPUTPARSER_C_H_
 
@@ -90,6 +109,8 @@ struct InputParserC * InputParser_Create(unsigned int max_string_count,unsigned 
 void InputParser_Destroy(struct InputParserC * ipc);
 unsigned char InputParser_SelfCheck(struct InputParserC * ipc);
 
+
+unsigned int InputParser_IsEmptyWord(struct InputParserC * ipc,unsigned int num);
 unsigned char CheckWordNumOk(struct InputParserC * ipc,unsigned int num);
 
 char InputParser_GetWordChar(struct InputParserC * ipc,unsigned int num,unsigned int pos);

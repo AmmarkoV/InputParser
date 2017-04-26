@@ -404,6 +404,34 @@ unsigned char CheckWordNumOk(struct InputParserC * ipc,unsigned int num)
   return 1;
 }
 
+
+/*
+   InputParser_GetWord..
+   Copies token with number (num) to c string (wheretostore) , variable storagesize contains the total size of wheretostore..!
+*/
+unsigned int InputParser_IsEmptyWord(struct InputParserC * ipc,unsigned int num)
+{
+  if ( CheckWordNumOk(ipc,num) == 0 ) { return 1; }
+  if ( ipc->tokenlist[num].length == 0 ) { return 1; }
+
+  unsigned int i=0;
+  for ( i = ipc->tokenlist[num].token_start; i<ipc->tokenlist[num].token_start+ipc->tokenlist[num].length; i++ )
+    {
+      switch (ipc->str[i])
+      {
+        case 10 : break;
+        case 13 : break;
+        case ' ' : break;
+        default :
+         return 0;
+      };
+    }
+
+ return 1;
+}
+
+
+
 /*
    InputParser_GetWord..
    Copies token with number (num) to c string (wheretostore) , variable storagesize contains the total size of wheretostore..!
