@@ -161,16 +161,48 @@ int InputParser_TrimCharacters(char * inpt , unsigned int length,char what2trim)
  *        these can be also read by InputParser_GetDelimeter or changed at any time using InputParser_SetDelimeter
  * @ingroup InputParser
  * @param InputParser Context ( needs to be created using InputParser_Create )
- * @retval 1 if success , 0 if not
  */
 void InputParser_DefaultDelimeters(struct InputParserC * ipc);
 
 
+/**
+ * @brief This call will change the value of a delimiter so that it will also act as a tokenization split character
+ * @ingroup InputParser
+ * @param InputParser Context ( needs to be created using InputParser_Create )
+ * @param Number of delimiter we want to set ( has to be less than the max_delimiter_count value we gave in InputParser_Create )
+ * @param New Value for the delimiter we want to set
+ */
 void InputParser_SetDelimeter(struct InputParserC * ipc,int num,char tmp);
+
+/**
+ * @brief Get Back the characters that are used as delimiters
+ * @ingroup InputParser
+ * @param InputParser Context ( needs to be created using InputParser_Create )
+ * @param Number of delimiter we want to set ( has to be less than the max_delimiter_count value we gave in InputParser_Create )
+ * @retval Character used as delimiter , or Null if incorrect delimter number requested
+ */
 char InputParser_GetDelimeter(struct InputParserC * ipc,int num);
 
+
+
+/**
+ * @brief Create an InputParser Structure and Context that can be used to tokenize strings
+ * @ingroup InputParser
+ * @param  The maximum number of strings/tokens to be returned as output from a SeperateWords command
+ * @param  The maximum number of delimters used typically 5 for the defaults '\n' ',' '=' '(' and ')'
+ * @retval InputParser Context , or Null if there is an error
+ */
 struct InputParserC * InputParser_Create(unsigned int max_string_count,unsigned int max_delimiter_count);
+
+
+/**
+ * @brief Destroy an InputParser Structure and Context and safely free all of the memory it might have allocated
+ * @ingroup InputParser
+ * @param InputParser Context ( needs to be created using InputParser_Create )
+ */
 void InputParser_Destroy(struct InputParserC * ipc);
+
+
 unsigned char InputParser_SelfCheck(struct InputParserC * ipc);
 
 
