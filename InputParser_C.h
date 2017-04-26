@@ -107,14 +107,65 @@ struct InputParserC
     /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 };
 
+
+/**
+ * @brief Get Back a String containing the version of the InputParser
+ * @retval Pointer to a C String that contains the version of InputParser
+ */
 char * InputParserC_Version();
 
+/**
+ * @brief Clear any non-character characters from string
+ * @ingroup InputParser
+ * @param String Input/Output
+ * @param Length of String
+ * @retval 1 if success , 0 if not
+ */
 int InputParser_ClearNonCharacters(char * inpt , unsigned int length);
+
+/**
+ * @brief Trim Starting Characters preceeding string
+ * @ingroup InputParser
+ * @param String Input/Output
+ * @param Length of String
+ * @param Character to Trim
+ * @retval 1 if success , 0 if not
+ */
 int InputParser_TrimCharactersStart(char * inpt , unsigned int length,char what2trim);
+
+
+/**
+ * @brief Trim Starting Characters after string
+ * @ingroup InputParser
+ * @param String Input/Output
+ * @param Length of String
+ * @param Character to Trim
+ * @retval 1 if success , 0 if not
+ */
 int InputParser_TrimCharactersEnd(char * inpt , unsigned int length,char what2trim);
+
+
+/**
+ * @brief This call will remove all characters specified from the string
+ * @ingroup InputParser
+ * @param String Input/Output
+ * @param Length of String
+ * @param Character to Trim
+ * @retval 1 if success , 0 if not
+ */
 int InputParser_TrimCharacters(char * inpt , unsigned int length,char what2trim);
 
+
+/**
+ * @brief This call will setup the default delimiters that are typically used , these are '\n' ',' '=' '(' and ')'
+ *        these can be also read by InputParser_GetDelimeter or changed at any time using InputParser_SetDelimeter
+ * @ingroup InputParser
+ * @param InputParser Context ( needs to be created using InputParser_Create )
+ * @retval 1 if success , 0 if not
+ */
 void InputParser_DefaultDelimeters(struct InputParserC * ipc);
+
+
 void InputParser_SetDelimeter(struct InputParserC * ipc,int num,char tmp);
 char InputParser_GetDelimeter(struct InputParserC * ipc,int num);
 
