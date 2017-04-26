@@ -6,16 +6,21 @@
  *         https://github.com/AmmarkoV/RGBDAcquisition
  *         https://github.com/AmmarkoV/AmmarServer
  * Basic usage is the following
-
-   struct InputParserC * ipc=0;
-   ipc = InputParser_Create(512,5);     //We want to separte lines of Max 512 different strings seperated using 5 delimiters
-   InputParser_SetDelimeter(ipc,0,' '); //We want to seperate spaces
-
+ *
+ *  struct InputParserC * ipc=0;
+ *  ipc = InputParser_Create(512,5);     //We want to separte lines of Max 512 different strings seperated using 5 delimiters
+ *  InputParser_SetDelimeter(ipc,0,' '); //We want to seperate spaces
+ *
+ *  char word[512];
+ *  int numberOfWords = InputParser_SeperateWords(ipc,"zero,one,2,three(four)",1);
+ *  for (int i=0; i<numberOfWords; i++)
+ *    {
+ *       InputParser_GetWord(ipc,i,word,512);
+ *    }
+ *  InputParser_Destroy(ipc);
  *
  *  @author Ammar Qammaz (AmmarkoV)
- *  @bug This is not yet thread safe
  */
-
 
 #ifndef _INPUTPARSER_C_H_
 #define _INPUTPARSER_C_H_
@@ -41,7 +46,9 @@ extern "C" {
 
 
 
-
+/**
+ * @brief A struct that contains the token list
+ */
 struct tokens
 {
   /* START MEANS THE FIRST CHARACTER TO READ..!
@@ -53,11 +60,17 @@ struct tokens
   unsigned int length;
 };
 
+/**
+ * @brief Guard Byte to make sure that there is no overflow
+ */
 struct guard_byte
 {
   unsigned int checksum;
 };
 
+/**
+ * @brief The structure that holds all of the Input Parsing Context
+ */
 struct InputParserC
 {
     /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
