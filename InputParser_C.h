@@ -29,22 +29,15 @@
 extern "C" {
 #endif
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
-#define DELIM_MAX_MAX 6
-#define CONTAINERS_MAX 1
-#define MAX_COMPLICITY 4
-
-#define MAX_MEMORY 256
-#define MAX_STRING 2048
-
+/** @brief Controls the use of scanf for getting back floats ,
+           scanf without field width limits can crash with huge input data on libc versions older than 2.13-25.
+           so this is better turned of and atof is used to do the float conversion*/
 #define USE_SCANF 0
-
-
 
 /**
  * @brief A struct that contains the token list
@@ -203,29 +196,179 @@ struct InputParserC * InputParser_Create(unsigned int max_string_count,unsigned 
 void InputParser_Destroy(struct InputParserC * ipc);
 
 
+/**
+ * @brief Perform an internal integrity check
+ * @ingroup InputParser
+ * @param InputParser Context to be checked ( needs to be created using InputParser_Create )
+ * @retval 1=Success,0=Error
+ */
 unsigned char InputParser_SelfCheck(struct InputParserC * ipc);
 
 
+/**
+ * @brief Check if a word ( InputParser_GetWord ) is empty after issuing a InputParser_SeperateWords call
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to check
+ * @retval 1=Success,0=Error
+ */
 unsigned int InputParser_IsEmptyWord(struct InputParserC * ipc,unsigned int num);
+
+
+
+/**
+ * @brief Checks if word with number num has allocated space in memory ( see InputParser_GetWord )
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to check
+ * @retval 1=Success,0=Error
+ */
 unsigned char CheckWordNumOk(struct InputParserC * ipc,unsigned int num);
 
+
+/**
+ * @brief Get a specific character of a Word ( instead of the whole string that would be returned with InputParser_GetWord )
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to check
+ * @param Character of word we want to get back
+ * @retval Character we requested or null if there is an error
+ */
 char InputParser_GetWordChar(struct InputParserC * ipc,unsigned int num,unsigned int pos);
 
-/* WordCompare and WordCompareNoCase return 1 when strings match , 0 otherwise..*/
+/**
+ * @brief Compare two words without case sensitivity and return wether they match or not..!
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to check
+ * @param String that we want to compare against
+ * @param Length of String that we want to compare against
+ * @retval 1=Match,0=Strings are different
+ */
 unsigned char InputParser_WordCompareNoCase(struct InputParserC * ipc,unsigned int num,const char * word,unsigned int wordsize);
+
+/**
+ * @brief Same as InputParser_WordCompareNoCase but supposes word is null terminated and auto-counts its length
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to check
+ * @param String that we want to compare against ( that should be null terminated )
+ * @retval 1=Match,0=Strings are different
+ */
 unsigned char InputParser_WordCompareNoCaseAuto(struct InputParserC * ipc,unsigned int num,const char * word);
+
+/**
+ * @brief Compare two words with case sensitivity and return wether they match or not..!
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to check
+ * @param String that we want to compare against ( that should be null terminated )
+ * @retval 1=Match,0=Strings are different
+ */
 unsigned char InputParser_WordCompare(struct InputParserC * ipc,unsigned int num,const char * word,unsigned int wordsize);
+
+/**
+ * @brief Same as InputParser_WordCompare but supposes word is null terminated and auto-counts its length
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to check
+ * @param String that we want to compare against ( that should be null terminated )
+ * @retval 1=Match,0=Strings are different
+ */
 unsigned char InputParser_WordCompareAuto(struct InputParserC * ipc,unsigned int num,const char * word);
 
+/**
+ * @brief Get back a string ( token ) after performing InputParser_SeperateWords
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to get
+ * @param Pointer to a C String that will accomodate the output
+ * @param Size of Pointer provided , should be big enough for the whole string plus its null terminator
+ * @retval 1=Sucess,0=Failure
+ */
 unsigned int InputParser_GetWord(struct InputParserC * ipc,unsigned int num,char * wheretostore,unsigned int storagesize);
+
+/**
+ * @brief Get back an uppercase string ( token ) after performing InputParser_SeperateWords
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to get
+ * @param Pointer to a C String that will accomodate the output
+ * @param Size of Pointer provided , should be big enough for the whole string plus its null terminator
+ * @retval 1=Sucess,0=Failure
+ */
 unsigned int InputParser_GetUpcaseWord(struct InputParserC * ipc,unsigned int num,char * wheretostore,unsigned int storagesize);
+
+/**
+ * @brief Get back a lowercase string ( token ) after performing InputParser_SeperateWords
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to get
+ * @param Pointer to a C String that will accomodate the output
+ * @param Size of Pointer provided , should be big enough for the whole string plus its null terminator
+ * @retval 1=Sucess,0=Failure
+ */
 unsigned int InputParser_GetLowercaseWord(struct InputParserC * ipc,unsigned int num,char * wheretostore,unsigned int storagesize);
+
+
+/**
+ * @brief Get back a signed integer ( token ) after performing InputParser_SeperateWords
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to get
+ * @retval The value in the form  of a number of token with number num , if the token is not a number returns null
+ */
 signed int InputParser_GetWordInt(struct InputParserC * ipc,unsigned int num);
+
+
+/**
+ * @brief Get back a float ( token ) after performing InputParser_SeperateWords
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to get
+ * @retval The value in the form  of a floating precision number of token , if the token is not a number returns NaN
+ */
 float InputParser_GetWordFloat(struct InputParserC * ipc,unsigned int num);
+
+
+/**
+ * @brief Get back The Length of a token so that we can allocate a proper buffer and then call InputParser_GetWord
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to get
+ * @retval The length of the token string size , 0=Failure to access token num
+ */
 unsigned int InputParser_GetWordLength(struct InputParserC * ipc,unsigned int num);
 
+
+/**
+ * @brief Split input string in tokens, this is the main functionality of this library..!
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to split to tokens
+ * @param 1=Keep a copy of the input string, this is safer in case the input string changes from another thread etc. , 0=Zero copy splitting that has more chances of going wrong
+ * @retval The number of tokens split,0=Failure
+ */
 int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcopy);
+
+/**
+ * @brief Same as InputParser_SeperateWords but accepts const char strings as input
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to split to tokens
+ * @param 1=Keep a copy of the input string, this is safer in case the input string changes from another thread etc. , 0=Zero copy splitting that has more chances of going wrong
+ * @retval The number of tokens split,0=Failure
+ */
 int InputParser_SeperateWordsCC(struct InputParserC * ipc,const char * inpt,char keepcopy);
+
+/**
+ * @brief Same as InputParser_SeperateWords but accepts unsigned char strings as input
+ * @ingroup InputParser
+ * @param InputParser Context to be used ( needs to be created using InputParser_Create )
+ * @param Word that we want to split to tokens
+ * @param 1=Keep a copy of the input string, this is safer in case the input string changes from another thread etc. , 0=Zero copy splitting that has more chances of going wrong
+ * @retval The number of tokens split,0=Failure
+ */
 int InputParser_SeperateWordsUC(struct InputParserC * ipc,unsigned char * inpt,char keepcopy);
 
 

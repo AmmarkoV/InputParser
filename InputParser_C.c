@@ -24,7 +24,7 @@
 int warningsAboutIncorrectlyAllocatedStackIssued = 0;
 
 
-char _ipc_ver[]=" 0.358 written from scratch - 8/2/10 \0";
+char _ipc_ver[]=" 0.359\0";  //26/4/2017
 
 
 /*
