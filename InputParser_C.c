@@ -24,7 +24,7 @@
 int warningsAboutIncorrectlyAllocatedStackIssued = 0;
 
 
-char _ipc_ver[]=" 0.359\0";  //26/4/2017
+char _ipc_ver[]=" 0.360\0";  //26/4/2017
 
 
 /*
@@ -716,6 +716,7 @@ int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcop
                             }
                           }
                           ipc->str = (char * ) malloc( sizeof(char) * (STRING_END+1) );
+                          memset(ipc->str,0,sizeof(char) * (STRING_END+1)); //Added 26-10-2018 to stop valgrind spam..
                           ipc->local_allocation = 1;
                           strncpy( ipc->str , inpt , STRING_END ) ;
                        } else
