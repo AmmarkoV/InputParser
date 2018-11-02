@@ -24,7 +24,7 @@
 int warningsAboutIncorrectlyAllocatedStackIssued = 0;
 
 
-char _ipc_ver[]=" 0.360\0";  //26/4/2017
+char _ipc_ver[]=" 0.361\0";  //2/10/2018
 
 
 /*
@@ -293,7 +293,7 @@ void InputParser_Destroy(struct InputParserC * ipc)
     if ( ipc->delimeters != 0 )
     {
      free(ipc->delimeters);
-     /*ipc->delimeters=0;*/
+     ipc->delimeters=0;
     }
     ipc->cur_delimeter_count=0;
     ipc->max_delimeter_count=0;
@@ -317,7 +317,7 @@ void InputParser_Destroy(struct InputParserC * ipc)
     if ( ipc->tokenlist != 0 )
      {
       free(ipc->tokenlist);
-      /*ipc->tokenlist=0;*/
+      ipc->tokenlist=0;
      }
     ipc->tokens_max=0;
     ipc->tokens_count=0;
@@ -404,6 +404,12 @@ unsigned char CheckWordNumOk(struct InputParserC * ipc,unsigned int num)
   return 1;
 }
 
+
+unsigned int InputParser_GetNumberOfArguments(struct InputParserC * ipc)
+{
+  if ( CheckIPCOk(ipc)==0) { return 0; }
+  return ipc->tokens_count;
+}
 
 /*
    InputParser_GetWord..
@@ -602,6 +608,7 @@ float InputParser_GetWordFloat(struct InputParserC * ipc,unsigned int num)
    if (!isLocallyAllocated)
     {
      string_segment = (char*) malloc( (tokenLength+1) * sizeof(char) );
+     //memset(string_segment,0,(tokenLength+1) * sizeof(char));
      if (string_segment==0)
       {
         fprintf(stderr,"InputParser_GetWordFloat could not allocate memory to return float value , returning NaN \n");
@@ -638,8 +645,9 @@ float InputParser_GetWordFloat(struct InputParserC * ipc,unsigned int num)
     */
     sscanf(string_segment,"%f",&return_value);
    #else
-    //fprintf(stderr,"Using atof to parse %s \n",string_segment);
+    //fprintf(stderr,"Using atof to parse `%s` \n",string_segment);
     return_value=atof(string_segment);
+    //fprintf(stderr,"Returns `%0.6f` \n",return_value);
    #endif // USE_SCANF
 
 
@@ -716,7 +724,7 @@ int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcop
                             }
                           }
                           ipc->str = (char * ) malloc( sizeof(char) * (STRING_END+1) );
-                          memset(ipc->str,0,sizeof(char) * (STRING_END+1)); //Added 26-10-2018 to stop valgrind spam..
+                          memset(ipc->str,0,sizeof(char) * (STRING_END+1));
                           ipc->local_allocation = 1;
                           strncpy( ipc->str , inpt , STRING_END ) ;
                        } else
