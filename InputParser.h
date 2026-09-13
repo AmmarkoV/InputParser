@@ -6,8 +6,6 @@
 #include <string.h>
 #include <ctype.h>
 
-using namespace std;
-
 
 class InputParser
 {
@@ -33,7 +31,7 @@ class InputParser
     char GetWordChar(int num,int chr);
     signed int GetWordInt(int num);
 
-    unsigned short GetWordLength(int num);
+    unsigned int GetWordLength(int num);
 
     int SeperateWords(char * inpt);
     int SeperateWordsCC(const char * inpt);

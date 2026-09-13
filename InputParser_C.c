@@ -177,7 +177,7 @@ static inline signed int Str2Int_internal(char * inpt,unsigned int start_from,un
         if ( i < 0 ) { /*fprintf("Gone negative! %u \n",i);*/ break; }
 
         curnum=(char) (inpt[i])-'0';
-        if ((curnum>=0)&(curnum<=9))
+        if ((curnum>=0)&&(curnum<=9))
         {
             intresult=intresult+(multiplier*curnum);
             multiplier=multiplier*10;
@@ -748,7 +748,17 @@ int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcop
                           ipc->local_allocation = 1;
                           strncpy( ipc->str , inpt , STRING_END ) ;
                        } else
-                       { ipc->str = inpt; }
+                       { /* Zero-copy mode - if a previous call left a locally allocated copy behind, free it first
+                            otherwise ipc->str would be overwritten below without ever being freed (leak), while
+                            local_allocation would still (wrongly) claim ipc->str is ours to free on Destroy,
+                            which would end up calling free() on memory the caller owns instead */
+                          if (ipc->local_allocation == 1)
+                          {
+                            if (ipc->str!=0) { free(ipc->str); }
+                            ipc->local_allocation = 0;
+                          }
+                          ipc->str = inpt;
+                       }
 
   ipc->str_length = STRING_END;
   /* COPY STRING ( OR POINTER ) TO IPC STRUCTURE
@@ -769,9 +779,15 @@ int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcop
         if (NEXT_SHOULD_NOT_BE_A_DELIMITER==0)
         {
          ipc->tokenlist[ipc->tokens_count].length = i - ipc->tokenlist[ipc->tokens_count].token_start;
-         ipc->tokens_count+=1;
-         ipc->tokenlist[ipc->tokens_count].token_start = i+1;
          WORDS_SEPERATED+=1;
+         ipc->tokens_count+=1;
+         if (ipc->tokens_count>ipc->tokens_max)
+           {
+             /* tokenlist only has room for tokens_max+1 entries - stop here instead of writing past it */
+             ipc->tokens_count=ipc->tokens_max;
+             return WORDS_SEPERATED;
+           }
+         ipc->tokenlist[ipc->tokens_count].token_start = i+1;
          break;
         } else
         {
@@ -788,9 +804,15 @@ int InputParser_SeperateWords(struct InputParserC * ipc,char * inpt,char keepcop
    if (NEXT_SHOULD_NOT_BE_A_DELIMITER==0)
         {
          ipc->tokenlist[ipc->tokens_count].length = i - ipc->tokenlist[ipc->tokens_count].token_start;
-         ipc->tokens_count+=1;
-         ipc->tokenlist[ipc->tokens_count].token_start = i+1;
          WORDS_SEPERATED+=1;
+         ipc->tokens_count+=1;
+         if (ipc->tokens_count<=ipc->tokens_max)
+           {
+             ipc->tokenlist[ipc->tokens_count].token_start = i+1;
+           } else
+           {
+             ipc->tokens_count=ipc->tokens_max;
+           }
 
         } else
   ipc->tokenlist[ipc->tokens_count].length = i - ipc->tokenlist[ipc->tokens_count].token_start;

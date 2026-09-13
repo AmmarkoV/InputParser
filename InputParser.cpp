@@ -19,9 +19,7 @@
 */
 
 
-const char * ver=" VERSION 1.30 - 7/1/10 \0";
-
-const char * Version()
+const char * InputParser::Version()
 {
  return InputParserC_Version();
 }
@@ -86,7 +84,7 @@ char InputParser::GetWordChar(int num,int chr)
 }
 
 
-unsigned short InputParser::GetWordLength(int num)
+unsigned int InputParser::GetWordLength(int num)
 {
   return InputParser_GetWordLength(ipc,num);
 }
